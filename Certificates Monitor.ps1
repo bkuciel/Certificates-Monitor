@@ -8,7 +8,7 @@ $path = "$PSScriptRoot\Certificates" #Define your path to folder with certificat
 
 $list = @()
 # Build list of Certificates which will expire in 35 days
-get-childitem $path | %{
+get-childitem $path | ForEach-Object{
     $cert = New-Object Security.Cryptography.X509Certificates.X509Certificate2 $_.FullName
     if ($cert.NotAfter -lt (Get-Date).AddDays(35)) {
         Write-Host "Certificate $_" "will expire" $cert.NotAfter -ForegroundColor Yellow
