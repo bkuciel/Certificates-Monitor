@@ -1,16 +1,22 @@
-# Variables
+### Variables ###
+# Mailserver
 $EmailFrom = 'monitor@example.com'
 $EmailTo = 'admins@example.com'
 $EmailServer = "mailserver.domain.com" 
 $EmailServerPort = "25"
-$path = "$PSScriptRoot\Certificates" #Define your path to folder with certificates
 
+# Define your path to folder with certificates or leave the setting and create folder "Certificates" in folder where the script is located
+$path = "$PSScriptRoot\Certificates" 
+
+# Define the number of days - if the expiration date of the certificate 
+# is less than the defined number of days, an e-mail notification will be sent
+$days = 35
 
 $list = @()
-# Build list of Certificates which will expire in 35 days
+# Build list of Certificates which will expire in defined time
 get-childitem $path | ForEach-Object{
     $cert = New-Object Security.Cryptography.X509Certificates.X509Certificate2 $_.FullName
-    if ($cert.NotAfter -lt (Get-Date).AddDays(35)) {
+    if ($cert.NotAfter -lt (Get-Date).AddDays($days)) {
         Write-Host "Certificate $_" "will expire" $cert.NotAfter -ForegroundColor Yellow
         $list += $cert
     }
@@ -18,7 +24,7 @@ get-childitem $path | ForEach-Object{
 
 $list | select dnsnamelist, notafter
 
-
+#Send mail for each certificate which is about to expire
 foreach ($item in $list)
 {
         $subject              = $item.subject.ToString()
