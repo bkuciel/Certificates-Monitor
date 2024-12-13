@@ -1,16 +1,24 @@
 ### Variables ###
+#region Variables
 # Mailserver
 $EmailFrom = 'monitor@example.com'
 $EmailTo = 'admins@example.com'
 $EmailServer = "mailserver.domain.com" 
 $EmailServerPort = "25"
-
-# Define your path to folder with certificates or leave the setting and create folder "Certificates" in folder where the script is located
-$path = "$PSScriptRoot\Certificates" 
-
 # Define the number of days - if the expiration date of the certificate 
 # is less than the defined number of days, an e-mail notification will be sent
 $days = 35
+
+# Define your path to folder with certificates or leave the setting and create folder "Certificates" in folder where the script is located
+$path = "$PSScriptRoot\Certificates" 
+#endregion
+
+# Create Certificates folder if it doesn't exist
+if (-not (Test-Path -Path $path)) {
+    New-Item -ItemType Directory -Path $path
+    Write-Host "Created directory: $path" -ForegroundColor Green
+}
+
 
 $list = @()
 # Build list of Certificates which will expire in defined time
